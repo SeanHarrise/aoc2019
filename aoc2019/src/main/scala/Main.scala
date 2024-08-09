@@ -1,5 +1,6 @@
 import scala.annotation.tailrec
 import scala.io.Source
+import java.util.ArrayList
 
 @main def hello(): Unit =
   val filename = "../resources/day1a.txt"
@@ -16,6 +17,7 @@ import scala.io.Source
   // println(answer2)
   // val answer = applyFunctionToLines(lines, calculateFuelRequired)
   // println(answer)
+  println(outer(0, 99, intcode).mkString(","))
 
 def getLines(filePath : String) : List[String] = {
     val bufferedSource = Source.fromFile(filePath)
@@ -56,9 +58,6 @@ def applyOpcode(intcode : Array[Int], i : Int, opcodeFunction : (Int, Int) => In
   val arrayLeft = intcode.slice(0, intcode(i+3)) // intcode(i+3)
   val updatedIndex = Array(opcodeFunction(intcode(intcode(i+1)), intcode(intcode(i+2))))
   val arrayRight = intcode.slice(intcode(i+3)+1, intcode.length)
-  // println(arrayLeft.mkString(","))
-  // println(updatedIndex.mkString(","))
-  // println(arrayRight.mkString(","))
   arrayLeft ++ updatedIndex ++ arrayRight
 }
 
@@ -80,5 +79,35 @@ def recursiveOpcode(intcode : Array[Int], i : Int) : Array[Int] = {
   } else {
     val newIntcode = applyOpcode(intcode, i, opcodeTwo)
     return recursiveOpcode(newIntcode, i + 4)
+  }
+}
+
+@tailrec
+def inner(inputOne : Int, current : Int, end: Int, intcode : Array[Int], func : (Array[Int], Int) => Array[Int]) : Array[Int] = {
+  if (current > end) {
+    return Array(-1)
+  } else {
+    val inputState = Array(intcode(0), inputOne, current) ++ intcode.slice(3, intcode.length)
+    val outputState = func(inputState, 0)
+    if (outputState(0) == 19690720) {
+      return inputState
+    }
+    else (
+      return inner(inputOne, current + 1, end, intcode, func)
+    )
+  }
+}
+
+@tailrec
+def outer(current : Int, end : Int, intcode : Array[Int]) : Array[Int] = {
+  if (current > end) {
+    return Array(-1)
+  } else {
+    val input = inner(current, 0, 99, intcode, recursiveOpcode)
+    if (input(0) == -1) {
+      return outer(current + 1, end, intcode)
+    } else {
+      return input
+    }
   }
 }
