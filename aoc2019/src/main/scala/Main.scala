@@ -12,7 +12,7 @@ import java.util.ArrayList
   // Array(1,0,0,0,99)
   // println(applyOpcode(Array(1,0,0,0,99), 0, opcodeOne).mkString(","))
   // println(intcodeRestored.mkString(","))
-  println(recursiveOpcode(intcodeRestored, 0).mkString(","))
+  // println(recursiveOpcode(intcodeRestored, 0).mkString(","))
   // val answer2 = applyRecursiveFunctionToLines(lines, calculateFuelRequiredRecursive)
   // println(answer2)
   // val answer = applyFunctionToLines(lines, calculateFuelRequired)
@@ -84,12 +84,16 @@ def recursiveOpcode(intcode : Array[Int], i : Int) : Array[Int] = {
 
 @tailrec
 def inner(inputOne : Int, current : Int, end: Int, intcode : Array[Int], func : (Array[Int], Int) => Array[Int]) : Array[Int] = {
+  print(s"-Inner $inputOne, $current ")
   if (current > end) {
     return Array(-1)
   } else {
     val inputState = Array(intcode(0), inputOne, current) ++ intcode.slice(3, intcode.length)
+    print(inputState.slice(0, 4).mkString(",") + " ")
     val outputState = func(inputState, 0)
+    println(outputState.slice(0, 4).mkString(",") + " ")
     if (outputState(0) == 19690720) {
+      println("RETURNING")
       return inputState
     }
     else (
@@ -100,6 +104,7 @@ def inner(inputOne : Int, current : Int, end: Int, intcode : Array[Int], func : 
 
 @tailrec
 def outer(current : Int, end : Int, intcode : Array[Int]) : Array[Int] = {
+  // println(s"Outer $current")
   if (current > end) {
     return Array(-1)
   } else {
